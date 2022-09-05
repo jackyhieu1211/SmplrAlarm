@@ -137,10 +137,11 @@ class AlarmFragment : Fragment() {
         }
 
         binding.cancelAlarm.setOnClickListener {
-            viewModel.cancelAlarm(
-                binding.alarmId.text.toString().toInt(),
-                requireContext().applicationContext
-            )
+//            viewModel.cancelAlarm(
+//                binding.alarmId.text.toString().toInt(),
+//                requireContext().applicationContext
+//            )
+            viewModel.cancelAllAlarm(requireContext().applicationContext)
         }
 
         binding.checkAlarm.setOnClickListener {

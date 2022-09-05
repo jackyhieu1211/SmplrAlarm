@@ -225,6 +225,11 @@ class AlarmViewModel : ViewModel() {
             requestCode { requestCode }
         }
 
+    fun cancelAllAlarm(applicationContext: Context) =
+        smplrAlarmCancelAll(applicationContext) {
+
+        }
+
     companion object{
         internal const val ACTION_SNOOZE = "action_snooze"
         internal const val ACTION_DISMISS = "action_dismiss"

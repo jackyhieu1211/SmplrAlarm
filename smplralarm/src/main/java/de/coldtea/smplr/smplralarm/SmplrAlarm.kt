@@ -82,6 +82,9 @@ fun smplrAlarmSet(context: Context, lambda: SmplrAlarmAPI.() -> Unit): Int =
 fun smplrAlarmCancel(context: Context, lambda: SmplrAlarmAPI.() -> Unit) =
     SmplrAlarmAPI(context).apply(lambda).removeAlarm()
 
+fun smplrAlarmCancelAll(context: Context, lambda: SmplrAlarmAPI.() -> Unit) =
+    SmplrAlarmAPI(context).apply(lambda).cancelAllAlarm()
+
 /**
  * API interface for renewing missing alarms.
  * SmplrAlarm automatically deals with intent removing cases namely shutting down the device

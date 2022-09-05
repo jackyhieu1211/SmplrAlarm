@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import de.coldtea.smplr.smplralarm.extensions.convertToJson
+import de.coldtea.smplr.smplralarm.models.AlarmItem
 import de.coldtea.smplr.smplralarm.models.NotificationChannelItem
 import de.coldtea.smplr.smplralarm.models.NotificationItem
 import de.coldtea.smplr.smplralarm.models.WeekDays
@@ -48,7 +49,7 @@ class SmplrAlarmAPI(val context: Context) {
     private val isAlarmValid: Boolean
         get() =
             if (hour == -1 && min == -1) true
-        else hour > -1 && hour < 24 && min > -1 && min < 60
+            else hour > -1 && hour < 24 && min > -1 && min < 60
 
     //endregion
 
@@ -201,6 +202,33 @@ class SmplrAlarmAPI(val context: Context) {
         }
     }
 
+    fun cancelAllAlarm() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val alarmList = alarmNotificationRepository.getAllAlarmNotifications().map {
+                AlarmItem(
+                    it.alarmNotificationId,
+                    it.hour,
+                    it.min,
+                    it.weekDays,
+                    it.isActive,
+                    it.infoPairs
+                )
+            }
+            alarmList.forEach {
+                Timber.e("AAAAAAAA id = ${it.requestId}")
+                cancelAlarm(it.requestId)
+            }
+        }
+    }
+
+    private fun cancelAlarm(notificationId: Int) {
+        alarmService.cancelAlarm(notificationId)
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteAlarmNotificationFromDatabase(notificationId)
+            // requestAPI?.requestAlarmList()
+        }
+    }
+
     internal fun removeAlarm() {
         alarmService.cancelAlarm(requestCode)
 
@@ -257,6 +285,14 @@ class SmplrAlarmAPI(val context: Context) {
             )
         } catch (exception: Exception) {
             Timber.e("saveAlarmNotificationToDatabase: Alarm Notification could not be updated to the database --> $exception")
+        }
+    }
+
+    private suspend fun deleteAlarmNotificationFromDatabase(requestCode: Int) {
+        try {
+            alarmNotificationRepository.deleteAlarmNotification(requestCode)
+        } catch (exception: Exception) {
+            Timber.e("saveAlarmNotificationToDatabase: Alarm Notification with id $requestCode could not be removed from the database --> $exception")
         }
     }
 
